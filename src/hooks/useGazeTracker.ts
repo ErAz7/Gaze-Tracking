@@ -1,15 +1,6 @@
 import { RefObject, useEffect, useState } from 'react';
 import webgazer from '../utils/webgazer';
 
-function getBodySize() {
-    const body = document.body;
-
-    return {
-        width: body.offsetHeight,
-        height: body.offsetWidth,
-    };
-}
-
 export default function useGazeTracker(containerRef: RefObject<HTMLElement>) {
     const [gaze, setGaze] = useState({ detected: false, col: 0, row: 0 });
 
@@ -25,8 +16,6 @@ export default function useGazeTracker(containerRef: RefObject<HTMLElement>) {
                 offsetTop: containerTop,
                 offsetLeft: containerLeft,
             } = containerRef.current;
-
-            const { width: bodyWidth, height: bodyHeight } = getBodySize();
 
             const { x, y } = data;
 

@@ -4,7 +4,6 @@ export type WebgazerType = {
         end: () => void;
     };
     params: object;
-    util: any;
 };
 
 declare global {
