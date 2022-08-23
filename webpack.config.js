@@ -4,12 +4,13 @@ const path = require('path');
 
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
     mode: prod ? 'production' : 'development',
     entry: './src/index.tsx',
     output: {
-        path: path.join(__dirname, '/build/'),
+        path: path.join(__dirname, 'build'),
     },
     module: {
         rules: [
@@ -49,5 +50,17 @@ module.exports = {
             template: 'public/index.html',
         }),
         new MiniCssExtractPlugin(),
+        new CopyWebpackPlugin({
+            patterns: [
+                {
+                    from: 'public',
+                    globOptions: {
+                        dot: true,
+                        gitignore: true,
+                        ignore: ['**/index.html'],
+                    },
+                },
+            ],
+        }),
     ],
 };
