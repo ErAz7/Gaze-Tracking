@@ -1,7 +1,10 @@
 import { RefObject, useEffect, useState } from 'react';
 import webgazer from '../utils/webgazer';
 
-export default function useGazeTracker(containerRef: RefObject<HTMLElement>) {
+export default function useGazeTracker(
+    containerRef: RefObject<HTMLElement>,
+    grid: { col: number; row: number }
+) {
     const [gaze, setGaze] = useState({ detected: false, col: 0, row: 0 });
 
     useEffect(() => {
@@ -19,8 +22,12 @@ export default function useGazeTracker(containerRef: RefObject<HTMLElement>) {
 
             const { x, y } = data;
 
-            const col = Math.floor((3 * (x - containerLeft)) / containerWidth);
-            const row = Math.floor((3 * (y - containerTop)) / containerHeight);
+            const col = Math.floor(
+                (grid.col * (x - containerLeft)) / containerWidth
+            );
+            const row = Math.floor(
+                (grid.row * (y - containerTop)) / containerHeight
+            );
 
             setGaze({
                 col: col < 0 ? 0 : col,

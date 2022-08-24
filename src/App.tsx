@@ -8,6 +8,8 @@ import useGazeTracker from './hooks/useGazeTracker';
 
 import './App.scss';
 
+const GRID = { col: 4, row: 4 };
+
 export default function App() {
     const gridContainerRef = useRef<HTMLDivElement>(null);
 
@@ -15,14 +17,19 @@ export default function App() {
         row: gazeRow,
         col: gazeCol,
         detected: gazeDetected,
-    } = useGazeTracker(gridContainerRef);
+    } = useGazeTracker(gridContainerRef, GRID);
 
     return (
         <main className='container'>
             <div className='container__content'>
-                <div ref={gridContainerRef} className='container__content-grid'>
-                    {Array.from(Array(3)).map((rowVal, rowIndex) =>
-                        Array.from(Array(3)).map((colVal, colIndex) => (
+                <div
+                    ref={gridContainerRef}
+                    className='container__content-grid'
+                    style={{
+                        gridTemplate: `repeat(${GRID.row}, 1fr) / repeat(${GRID.col}, 1fr)`,
+                    }}>
+                    {Array.from(Array(GRID.row)).map((rowVal, rowIndex) =>
+                        Array.from(Array(GRID.col)).map((colVal, colIndex) => (
                             <div
                                 className={`
                                     container__content-grid-cell
