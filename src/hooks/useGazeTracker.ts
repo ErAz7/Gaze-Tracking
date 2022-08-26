@@ -1,11 +1,17 @@
 import { RefObject, useEffect, useState } from 'react';
 import webgazer from '../utils/webgazer';
 
+export type GazeType = {
+    col: number | null;
+    row: number | null;
+};
+
 export default function useGazeTracker(
     containerRef: RefObject<HTMLElement>,
-    grid: { col: number; row: number }
+    grid: { cols: number; rows: number }
 ) {
-    const [gaze, setGaze] = useState({ detected: false, col: 0, row: 0 });
+    const [loading, setLoading] = useState(true);
+    const [gaze, setGaze] = useState<GazeType>({ col: null, row: null });
 
     useEffect(() => {
         const listener = webgazer.setGazeListener((data) => {
@@ -23,17 +29,17 @@ export default function useGazeTracker(
             const { x, y } = data;
 
             const col = Math.floor(
-                (grid.col * (x - containerLeft)) / containerWidth
+                (grid.cols * (x - containerLeft)) / containerWidth
             );
             const row = Math.floor(
-                (grid.row * (y - containerTop)) / containerHeight
+                (grid.rows * (y - containerTop)) / containerHeight
             );
 
             setGaze({
                 col: col < 0 ? 0 : col,
                 row: row < 0 ? 0 : row,
-                detected: true,
             });
+            setLoading(false);
         });
 
         listener.begin();
@@ -41,5 +47,8 @@ export default function useGazeTracker(
         return () => listener.end();
     }, []);
 
-    return gaze;
+    return {
+        loading,
+        gaze,
+    };
 }

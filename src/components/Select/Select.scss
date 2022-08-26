@@ -1,0 +1,10 @@
+@import "../../styles/variables.scss";
+
+.Select {
+    padding: 4px;
+    outline: none;
+    border: 1px solid $color-primary;
+    border-radius: 2px;
+    color: $color-primary;
+    cursor: pointer;
+}

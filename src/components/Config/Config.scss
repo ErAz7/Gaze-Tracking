@@ -1,0 +1,43 @@
+@import "../../styles/variables.scss";
+
+.Config {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    z-index: $zIndex-popup;
+    transform: translate(-50%, -50%);
+    width: 300px;
+    padding: 15px 10px;
+    border-radius: 4px;
+    background-color: #fff;
+    box-shadow: 0px 0px 4px 1px rgba($color-primary, 0.5);
+    text-align: center;
+    
+    &--show {
+        display: block;
+    }
+
+    &__text {
+        padding: 4px;
+        text-align: center;
+        font-size: 18px;
+    }
+
+    &__select {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 15px;
+
+        &-separator {
+            font-size: 20px;
+            padding: 0 10px;
+            color: #888;
+        }
+    }
+
+    &__button {
+        margin-top: 15px;
+    }
+}

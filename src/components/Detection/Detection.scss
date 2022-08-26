@@ -1,0 +1,19 @@
+@import "../../styles/variables.scss";
+
+.Detection {
+    &__grid {
+        display: grid;
+        width: 100%;
+        height: 100%;
+
+        &-cell {
+            background-color: #ddd;
+            border: 1px solid #fff;
+            transition: background-color 1s;
+
+            &--gazed {
+                background-color: $color-primary;
+            }
+        }
+    }
+}

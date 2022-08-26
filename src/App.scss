@@ -1,3 +1,6 @@
+@import "./styles/variables.scss";
+
+
 body,
 html {
     margin: 0;
@@ -10,8 +13,6 @@ svg {
 }
 
 .container {
-    $title-height: 35px;
-    $bottom-link-height: 35px;
     $color-github: #24292f;
 
     padding: $title-height 0;
@@ -25,7 +26,7 @@ svg {
         padding: 5px 10px;
         box-sizing: border-box;
         height: $title-height;
-        background-color: rgb(136, 194, 195);
+        background-color: $color-primary;
         color: white;
         font-weight: bold;
 
@@ -42,7 +43,7 @@ svg {
         right: 0;
         padding: 4px;
         color: white;
-        background-color: rgb(50, 50, 50);
+        background-color: #323232;
         font-weight: bold;
 
         &-link {
@@ -83,21 +84,5 @@ svg {
         overflow: auto;
         padding: 10px;
         margin: 10px 0;
-
-        &-grid {
-            display: grid;
-            width: 100%;
-            height: 100%;
-
-            &-cell {
-                background-color: #ddd;
-                border: 1px solid #fff;
-                transition: background-color 1s;
-
-                &--gazed {
-                    background-color: #29e170;
-                }
-            }
-        }
     }
 }

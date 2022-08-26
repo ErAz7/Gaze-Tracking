@@ -1,53 +1,68 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 
 import { EXTERNALS } from './config';
 
+import useGazeTracker from './hooks/useGazeTracker';
+import Detection from './components/Detection/Detection';
+import Config from './components/Config/Config';
+
 import COMPUTER_VISION from './assets/computer-vision.png';
 import GITHUB from './assets/github.svg';
-import useGazeTracker from './hooks/useGazeTracker';
-
 import './App.scss';
 
-const GRID = { col: 4, row: 4 };
+type ConfigType = { rows: number; cols: number };
 
 export default function App() {
-    const gridContainerRef = useRef<HTMLDivElement>(null);
+    const gridContainerRef = useRef(null);
+    const [showConfig, setShowConfig] = useState(true);
+    const [step, setStep] = useState(0);
+    const [config, setConfig] = useState<ConfigType>({
+        rows: 0,
+        cols: 0,
+    });
 
     const {
-        row: gazeRow,
-        col: gazeCol,
-        detected: gazeDetected,
-    } = useGazeTracker(gridContainerRef, GRID);
+        gaze: { row: gazeRow, col: gazeCol },
+        loading: gazeLoading,
+    } = useGazeTracker(gridContainerRef, config);
+
+    function handleNextStep() {
+        setStep(step + 1);
+    }
+
+    function handleGridConfigChange(config: ConfigType) {
+        setConfig(config);
+    }
+
+    function handleConfigHide() {
+        setShowConfig(false);
+    }
+
+    function renderContent(step: number) {
+        switch (step) {
+            case 0:
+                return (
+                    <Detection
+                        gaze={{
+                            row: gazeRow,
+                            col: gazeCol,
+                        }}
+                        config={config}
+                        gridContainerRef={gridContainerRef}
+                    />
+                );
+        }
+    }
 
     return (
         <main className='container'>
-            <div className='container__content'>
-                <div
-                    ref={gridContainerRef}
-                    className='container__content-grid'
-                    style={{
-                        gridTemplate: `repeat(${GRID.row}, 1fr) / repeat(${GRID.col}, 1fr)`,
-                    }}>
-                    {Array.from(Array(GRID.row)).map((rowVal, rowIndex) =>
-                        Array.from(Array(GRID.col)).map((colVal, colIndex) => (
-                            <div
-                                className={`
-                                    container__content-grid-cell
-                                    ${
-                                        gazeDetected &&
-                                        gazeRow === rowIndex &&
-                                        gazeCol === colIndex
-                                            ? 'container__content-grid-cell--gazed'
-                                            : ''
-                                    }
-                                `}
-                                key={`${colIndex}-${rowIndex}`}
-                            />
-                        ))
-                    )}
-                </div>
-            </div>
-
+            <Config
+                show={showConfig}
+                onHide={handleConfigHide}
+                value={config}
+                onChange={handleGridConfigChange}
+            />
+            <div className='container__content'>{renderContent(step)}</div>
             <label className='container__credits'>
                 By{' '}
                 <a
