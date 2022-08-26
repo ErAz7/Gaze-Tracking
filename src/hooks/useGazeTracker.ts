@@ -1,4 +1,4 @@
-import { RefObject, useEffect, useState } from 'react';
+import { RefObject, useEffect, useRef, useState } from 'react';
 import webgazer from '../utils/webgazer';
 
 export type GazeType = {
@@ -8,10 +8,15 @@ export type GazeType = {
 
 export default function useGazeTracker(
     containerRef: RefObject<HTMLElement>,
-    grid: { cols: number; rows: number }
+    config: { cols: number; rows: number }
 ) {
     const [loading, setLoading] = useState(true);
     const [gaze, setGaze] = useState<GazeType>({ col: null, row: null });
+    const configRef = useRef(config);
+
+    useEffect(() => {
+        configRef.current = config;
+    }, [config]);
 
     useEffect(() => {
         const listener = webgazer.setGazeListener((data) => {
@@ -29,10 +34,10 @@ export default function useGazeTracker(
             const { x, y } = data;
 
             const col = Math.floor(
-                (grid.cols * (x - containerLeft)) / containerWidth
+                (configRef.current.cols * (x - containerLeft)) / containerWidth
             );
             const row = Math.floor(
-                (grid.rows * (y - containerTop)) / containerHeight
+                (configRef.current.rows * (y - containerTop)) / containerHeight
             );
 
             setGaze({
