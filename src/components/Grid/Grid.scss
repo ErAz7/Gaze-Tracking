@@ -1,6 +1,6 @@
 @import "../../styles/variables.scss";
 
-.Detection {
+.Grid {
     &__grid {
         display: grid;
         width: 100%;
@@ -10,8 +10,12 @@
             background-color: #ddd;
             border: 1px solid #fff;
             transition: background-color 1s;
+            
+            &--secondary {
+                background-color: $color-secondary;
+            }
 
-            &--gazed {
+            &--primary {
                 background-color: $color-primary;
             }
         }

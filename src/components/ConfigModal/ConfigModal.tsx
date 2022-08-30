@@ -1,20 +1,21 @@
 import React, { ChangeEvent, ChangeEventHandler } from 'react';
-import Button from '../Button/Button';
 import Select from '../Select/Select';
-import './Config.scss';
+import Modal from '../Modal/Modal';
+import { TEXTS } from '../../config/constants';
+import './ConfigModal.scss';
 
 export type ValueType = { cols: number; rows: number };
 
 export type PropTypes = {
     className?: string;
     show: boolean;
-    onHide: () => void;
+    onDone: () => void;
     value: ValueType;
     onChange: (value: ValueType) => void;
 };
 
-export default function Config(props: PropTypes): JSX.Element {
-    const { className, value, show, onHide, onChange } = props;
+export default function ConfigModal(props: PropTypes): JSX.Element {
+    const { className, value, show, onDone, onChange } = props;
     const { cols, rows } = value;
 
     function handleRowChange(isCols: boolean) {
@@ -39,7 +40,7 @@ export default function Config(props: PropTypes): JSX.Element {
     ) {
         return (
             <Select
-                className='Config__select-item'
+                className='ConfigModal__select-item'
                 value={selectedValue}
                 onChange={changeHandler}>
                 <option disabled={true} value={0}>
@@ -54,22 +55,24 @@ export default function Config(props: PropTypes): JSX.Element {
         );
     }
 
+    const doneDisabled = !rows || !cols;
+
+    const buttons = [{ text: 'Done', onClick: onDone, disabled: doneDisabled }];
+
     return (
-        <div
+        <Modal
             className={`
                 ${className}
-                Config
-                ${show ? 'Config--show' : ''}
-            `}>
-            <span className='Config__text'>Select the grid layout</span>
-            <div className='Config__select'>
+                ConfigModal
+            `}
+            show={show}
+            buttons={buttons}>
+            <span className='ConfigModal__text'>{TEXTS.CONFIG}</span>
+            <div className='ConfigModal__select'>
                 {renderSelect(cols, 'Columns', handleRowChange(true))}
-                <span className='Config__select-separator'>X</span>
+                <span className='ConfigModal__select-separator'>X</span>
                 {renderSelect(rows, 'Rows', handleRowChange(false))}
             </div>
-            <Button className='Config__button' onClick={onHide}>
-                Done
-            </Button>
-        </div>
+        </Modal>
     );
 }

@@ -1,8 +1,12 @@
+export type SetGazeListenerType = (
+    callback: (data: { x: number; y: number }) => void
+) => {
+    begin: () => void;
+    end: () => void;
+};
+
 export type WebgazerType = {
-    setGazeListener: (callback: (data: { x: number; y: number }) => void) => {
-        begin: () => void;
-        end: () => void;
-    };
+    setGazeListener: SetGazeListenerType;
     params: object;
 };
 

@@ -1,10 +1,14 @@
 import React, { useRef, useState } from 'react';
 
-import { EXTERNALS } from './config';
+import { EXTERNALS } from './config/constants';
 
 import useGazeTracker from './hooks/useGazeTracker';
-import Detection from './components/Detection/Detection';
-import Config from './components/Config/Config';
+import Grid from './components/Grid/Grid';
+import Link from './components/Link/Link';
+import ConfigModal from './components/ConfigModal/ConfigModal';
+import CalibrateModal from './components/CalibrateModal/CalibrateModal';
+import LoadingModal from './components/LoadingModal/LoadingModal';
+import DetectModal from './components/DetectModal/DetectModal';
 
 import COMPUTER_VISION from './assets/computer-vision.png';
 import GITHUB from './assets/github.svg';
@@ -12,78 +16,95 @@ import './App.scss';
 
 type ConfigType = { rows: number; cols: number };
 
+enum STEPS {
+    CONFIG = 'CONFIG',
+    PRE_CALIBRATE = 'PRE_CALIBRATE',
+    CALIBRATE = 'CALIBRATE',
+    PRE_DETECT = 'PRE_DETECT',
+    DETECT = 'DETECT',
+}
+
 export default function App() {
     const gridContainerRef = useRef(null);
-    const [showConfig, setShowConfig] = useState(true);
-    const [step, setStep] = useState(0);
+    const [step, setStep] = useState(STEPS.CONFIG);
     const [config, setConfig] = useState<ConfigType>({
         rows: 0,
         cols: 0,
     });
 
-    const {
-        gaze: { row: gazeRow, col: gazeCol },
-        loading: gazeLoading,
-    } = useGazeTracker(gridContainerRef, config);
+    const { train, start, loading, gaze, trainer } = useGazeTracker(
+        gridContainerRef,
+        config
+    );
 
-    function handleNextStep() {
-        setStep(step + 1);
+    function handleConfigDone() {
+        setStep(STEPS.PRE_CALIBRATE);
+        start();
+    }
+
+    function handleCalibrateSkip() {
+        setStep(STEPS.DETECT);
+    }
+
+    function handleCalibrateOkay() {
+        setStep(STEPS.CALIBRATE);
+        train(() => setStep(STEPS.PRE_DETECT));
     }
 
     function handleGridConfigChange(config: ConfigType) {
         setConfig(config);
     }
 
-    function handleConfigHide() {
-        setShowConfig(false);
+    function handleDetectionOkay() {
+        setStep(STEPS.DETECT);
     }
 
-    function renderContent(step: number) {
-        switch (step) {
-            case 0:
-                return (
-                    <Detection
-                        gaze={{
-                            row: gazeRow,
-                            col: gazeCol,
-                        }}
-                        config={config}
-                        gridContainerRef={gridContainerRef}
-                    />
-                );
-        }
-    }
+    const showConfigModal = step === STEPS.CONFIG;
+    const showLoadingModal = step === STEPS.PRE_CALIBRATE && loading;
+    const showCalibrateModal = step === STEPS.PRE_CALIBRATE && !loading;
+    const showDetectModal = step === STEPS.PRE_DETECT;
 
     return (
         <main className='container'>
-            <Config
-                show={showConfig}
-                onHide={handleConfigHide}
+            <ConfigModal
+                show={showConfigModal}
+                onDone={handleConfigDone}
                 value={config}
                 onChange={handleGridConfigChange}
             />
-            <div className='container__content'>{renderContent(step)}</div>
+
+            <LoadingModal show={showLoadingModal} />
+            <CalibrateModal
+                show={showCalibrateModal}
+                onOkay={handleCalibrateOkay}
+                onSkip={handleCalibrateSkip}
+            />
+            <DetectModal show={showDetectModal} onOkay={handleDetectionOkay} />
+            <div className='container__content'>
+                <Grid
+                    gaze={gaze}
+                    trainer={trainer}
+                    config={config}
+                    gridContainerRef={gridContainerRef}
+                />
+            </div>
             <label className='container__credits'>
                 By{' '}
-                <a
+                <Link
                     className='container__credits-link'
-                    href={EXTERNALS.LINKEDIN}
-                    target='_blank'
-                    rel='noreferrer'>
+                    href={EXTERNALS.LINKEDIN}>
                     ErAz7
-                </a>
+                </Link>
             </label>
 
-            <a
+            <Link
                 className={`
                     container__footer-link
                     container__footer-link--github
                 `}
-                href={EXTERNALS.GITHUB}
-                target='_blank'
-                rel='noreferrer'>
+                href={EXTERNALS.GITHUB}>
                 <GITHUB className='container__footer-link-logo' /> Github Repo
-            </a>
+            </Link>
 
             <div className='container__title'>
                 <img src={COMPUTER_VISION} className='container__title-logo' />
